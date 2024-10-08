@@ -1,0 +1,114 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build c++",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "ARG=${relativeFile}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "run test",
+            "type": "shell",
+            "command": "s1=${fileExtname}; if [ ${#s1} == 0 ] || [ ${s1} != .cpp ]; then ./a.out < input; else make test ARG=${relativeFile} IN=input; fi",
+            "args": [],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "oj init new contest",
+            "type": "shell",
+            "command": "read",
+            "args": [
+                "-p",
+                "\"Contest name? \"",
+                "cont;",
+                "mkdir",
+                "-p",
+                "$cont;",
+                "read",
+                "-p",
+                "\"Problem name? \"",
+                "prob;",
+                "touch",
+                "${cont}/${prob}.cpp;",
+                "oj",
+                "d",
+                "https://atcoder.jp/contests/${cont}/tasks/${cont}_${prob}",
+                "-d",
+                "test/${cont}/${prob};",
+                "code",
+                "-a",
+                "${cont}/${prob}.cpp"
+            ]
+        },
+        {
+            "label": "oj init problem",
+            "type": "shell",
+            "command": "read",
+            "args": [
+                "-p",
+                "\"Problem name? \"",
+                "name;",
+                "touch",
+                "${relativeFileDirname}/${name}.cpp;",
+                "oj",
+                "d",
+                "https://atcoder.jp/contests/${relativeFileDirname}/tasks/${relativeFileDirname}_$name",
+                "-d",
+                "test/${relativeFileDirname}/$name;",
+                "code",
+                "-a",
+                "${relativeFileDirname}/${name}.cpp"
+            ]
+        },
+        {
+            "label": "oj run tests",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "ARG=${relativeFile};",
+                "oj",
+                "t",
+                "-d",
+                "test/${relativeFileDirname}/${fileBasenameNoExtension}"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "oj submit",
+            "type": "shell",
+            "command": "url=https://atcoder.jp/contests/${relativeFileDirname}/tasks/${relativeFileDirname}_${fileBasenameNoExtension}; file=${relativeFile}; s1=${relativeFileDirname}; echo \"$file -> $url\"; read -p \"Are you sure? (y/n): \" ans; [ $ans == y ] && echo ${s1:0:3}${fileBasenameNoExtension} | oj s $url $file",
+            "args": []
+        },
+        {
+            "label": "oj login",
+            "type": "shell",
+            "command": "oj",
+            "args": [
+                "login",
+                "https://atcoder.jp"
+            ]
+        },
+        {
+            "label": "clean tests",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-r",
+                "test"
+            ]
+        }
+    ]
+}
